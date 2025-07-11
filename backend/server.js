@@ -4,7 +4,7 @@ const ejs = require("ejs");
 
 const {connectMongoose, User}= require("./Database.js");
 const passport = require ("passport")
-const {initializingPassport} = require("./passportConfig.js");
+const {initializingPassport, isAuthenticated} = require("./passportConfig.js");
 const expressSession = require("express-session");
 connectMongoose();
 
@@ -12,10 +12,12 @@ initializingPassport(passport);
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+//resave = false prevents unnecessary storage consumption
+app.use(expressSession({secret: "secret", resave: false,
+    saveUninitialized: false}));
 app.use(passport.initialize());
 app.use(passport.session());
-//resave = false prevents unnecessary storage consumption
-app.use(expressSession({secret: "secret", resave: false, saveUninitialized: false}));
+
 
 app.set("view engine", "ejs");
 
@@ -40,9 +42,17 @@ app.post("/register", async (req,res)=>{
     res.status(201).send(newUser);
 });
 
-// app.post("/login", async (req,res)=>{
-// });
+app.post("/login", passport.authenticate("local",{failureRedirect:"/register",successRedirect:"/"}), async (req,res)=>{
+});
 
+app.get("/profile", isAuthenticated,(req,res)=>{
+    res.send(req.user);
+})
+app.get("/logout", (req,res)=> {
+    req.logout();
+    //res.redirect("/login");
+    res.send("logged out");
+});
 app.listen(3000 , () => {
     console.log("Listening on http://localhost:3000");
 });
