@@ -47,12 +47,21 @@ app.post("/login", passport.authenticate("local",{failureRedirect:"/register",su
 
 app.get("/profile", isAuthenticated,(req,res)=>{
     res.send(req.user);
-})
-app.get("/logout", (req,res)=> {
-    req.logout();
-    //res.redirect("/login");
-    res.send("logged out");
 });
+// app.get("/logout", (req,res)=> {
+//     req.logout();
+//     //res.redirect("/login");
+//     res.send("logged out");
+// });
+
+app.get('/logout', (req, res, next) => {
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    res.send("Logged Out");
+    // res.redirect('/');
+  });
+});
+
 app.listen(3000 , () => {
     console.log("Listening on http://localhost:3000");
 });
