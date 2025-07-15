@@ -34,25 +34,71 @@ app.get("/login", (req,res)=>{
 });
 
 
-app.post("/register", async (req,res)=>{
-    const user = await User.findOne({username: req.body.username});
-    if(user)return express.status(400).send("User already exists");
-    const newUser = await User.create(req.body);
+// app.post("/register", async (req,res)=>{
+//     const user = await User.findOne({username: req.body.username});
+//     if(user)return express.status(400).send("User already exists");
+//     const newUser = await User.create(req.body);
 
-    res.status(201).send(newUser);
+//     res.status(201).send(newUser);
+// });
+
+app.post("/register", async (req, res) => {
+    try {
+        const existingUser = await User.findOne({ username: req.body.username });
+        if (existingUser) return res.status(400).send("User already exists");
+
+        const newUser = await User.create(req.body);
+        res.redirect("/login");
+        // req.login(newUser, (err) => {
+        //     if (err) return res.status(500).send(err);
+        //     return res.redirect("/");
+        // });
+
+    } catch (err) {
+        res.status(500).send("Something went wrong: " + err.message);
+    }
 });
 
-app.post("/login", passport.authenticate("local",{failureRedirect:"/register",successRedirect:"/"}), async (req,res)=>{
+
+
+
+app.post("/login", passport.authenticate("local",{failureRedirect:"/register",successRedirect:"/portal"}), async (req,res)=>{
 });
 
 app.get("/profile", isAuthenticated,(req,res)=>{
-    res.send(req.user);
+    
+    //res.send(req.user);
+     res.render("Profile",{user: req.user});
 });
 // app.get("/logout", (req,res)=> {
 //     req.logout();
 //     //res.redirect("/login");
 //     res.send("logged out");
 // });
+app.post("/profile", isAuthenticated, async (req, res) => {
+  // You can save this to DB or just console log for now
+  console.log("User profile submitted:", req.body);
+
+  // Optionally, update user's profile in DB
+  await User.findByIdAndUpdate(req.user._id, {
+    ...req.body
+  });
+
+  res.send("Profile saved successfully. You can enhance this with a redirect or dashboard.");
+});
+
+app.get("/portal", isAuthenticated,(req, res) => {
+  res.render("portal",{user: req.user});
+});
+
+app.post("/choose-role", isAuthenticated, (req, res) => {
+  const role = req.body.role;
+  if (role === "admin") {
+    return res.redirect("/admin-dashboard");
+  }
+  return res.redirect("/profile"); // default user dashboard
+});
+
 
 app.get('/logout', (req, res, next) => {
   req.logout(function(err) {
