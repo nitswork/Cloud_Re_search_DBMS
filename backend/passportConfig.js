@@ -4,11 +4,11 @@ exports.initializingPassport= (passport)=>{
     passport.use(new LocalStrategy(async(username,password, done)=>{
         try {
             const user = await User.findOne({username});
-        if(!user) return done(null,false);
-        if(user.password != password) return done(null,false);
+        if(!user) {console.log("User not found"); return done(null,false);}
+        if(user.password != password) {console.log("Incorrect password"); return done(null,false);}
         return done(null, user);
-        } catch (error) {
-            return done(error, false);
+        } catch (err) {
+            return done(err, false);
         }
     }));
     passport.serializeUser((user,done) => {
