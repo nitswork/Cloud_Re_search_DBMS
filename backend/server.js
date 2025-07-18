@@ -44,7 +44,8 @@ app.post("/register", async (req, res) => {
     return res.status(400).json({ message: "Email cannot start with a number." });
   }
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username)) {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  if (!emailRegex.test(username)) {
     return res.status(400).json({ message: "Invalid email format." });
   }
 
@@ -65,12 +66,12 @@ app.post("/register", async (req, res) => {
 // ✅ Login User
 app.post('/login', (req, res, next) => {
   const { username, password } = req.body;
-
+//gap in strings
   if (!username || !password || !username.trim() || !password.trim()) {
     return res.status(400).json({ message: 'Username and password cannot be empty.' });
   }
 
-  if (/^\d/.test(username)) {
+  if (/^\d/.test(username)) {//rejects
     return res.status(400).json({ message: 'Username cannot start with a number.' });
   }
 
