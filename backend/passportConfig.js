@@ -1,3 +1,4 @@
+const bcrypt= require('bcryptjs');
 const LocalStrategy = require('passport-local').Strategy;
 const {User} = require('./Database.js');
 exports.initializingPassport= (passport)=>{
@@ -5,8 +6,12 @@ exports.initializingPassport= (passport)=>{
         try {
             const user = await User.findOne({username});
         if(!user) {console.log("User not found"); return done(null,false);}
-        if(user.password != password) {console.log("Incorrect password"); return done(null,false);}
-        return done(null, user);
+        // if(user.password != password) {console.log("Incorrect password"); return done(null,false);}
+        const match = await bcrypt.compare(password,user.password);
+        if(match)
+            return done(null, user);
+        else
+            return done(null,false);
         } catch (err) {
             return done(err, false);
         }

@@ -1,0 +1,86 @@
+body, html, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.background {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: url("https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1740&q=80")
+    no-repeat center center/cover;
+  filter: blur(6px);
+  z-index: -1;
+}
+
+.overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: -1;
+}
+
+.login-container {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-box {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  padding: 2rem;
+  border-radius: 15px;
+  width: 400px;
+  color: #0a0a0a;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.login-box h2 {
+  margin-bottom: 1.5rem;
+}
+
+.login-box input {
+  width: 90%;
+  padding: 0.7rem;
+  margin-bottom: 1rem;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+}
+
+.login-box button {
+  width: 90%;
+  padding: 0.7rem;
+  background-color: #00a8ff;
+  color: rgb(11, 11, 11);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.login-box button:hover {
+  background-color: #48b3ed;
+}
+
+.login-box a {
+  display: block;
+  margin-top: 1rem;
+  color: #0a0a0a;
+  font-size: 0.9rem;
+  text-decoration: underline;
+}
+
+.popup {
+  margin-top: 1rem;
+  background: #f8d7da;
+  color: #721c24;
+  padding: 0.75rem;
+  border-radius: 8px;
+}
