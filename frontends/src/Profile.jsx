@@ -21,13 +21,25 @@ const ProfileForm = () => {
 
   const handleSubmit = async (e) => {
   e.preventDefault();
+  // ✅ Email validation (if not empty)
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]*[a-zA-Z][a-zA-Z0-9-]*\.[a-zA-Z]{2,}$/;
+  if (!emailRegex.test(formData.email.trim())) {
+    alert('Please enter a valid email address.');
+    return;
+  }
+
+  // ✅ Phone validation (only if provided)
+  if (formData.phone && !/^\d{10}$/.test(formData.phone.trim())) {
+    alert('Phone number must be exactly 10 digits.');
+    return;
+  }
     try {
         const res = await fetch('http://localhost:3001/profile', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        credentials: 'include', // 🔥 Important for session cookies
+        credentials: 'include', // Important for session cookies
         body: JSON.stringify(formData),
         });
 
@@ -103,6 +115,7 @@ const ProfileForm = () => {
           name="phone"
           value={formData.phone}
           onChange={handleChange}
+          required
         />
 
         <label htmlFor="country">Country</label>
@@ -131,6 +144,7 @@ const ProfileForm = () => {
               name="university"
               value={formData.university}
               onChange={handleChange}
+              required
             />
           </div>
         )}
@@ -143,10 +157,10 @@ const ProfileForm = () => {
               name="department"
               value={formData.department}
               onChange={handleChange}
+              required
             />
           </div>
         )}
-
         <button type="submit">Save Profile</button>
       </form>
     </div>
