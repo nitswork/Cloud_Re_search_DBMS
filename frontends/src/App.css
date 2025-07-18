@@ -1,0 +1,46 @@
+/* App.css */
+
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f4f4;
+  height: 100%;
+}
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* General link styles */
+a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Optional: Apply a container style to all pages */
+.page-container {
+  padding: 2rem;
+}
+
+/* Utility class for center alignment */
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Footer styling */
+footer {
+  margin-top: auto;
+  padding: 1rem;
+  text-align: center;
+  background-color: #e0e0e0;
+  font-size: 0.9rem;
+}
