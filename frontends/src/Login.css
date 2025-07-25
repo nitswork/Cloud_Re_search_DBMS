@@ -5,7 +5,7 @@ body, html, #root {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.background {
+.login-background {
   position: fixed;
   width: 100%;
   height: 100%;
@@ -15,7 +15,7 @@ body, html, #root {
   z-index: -1;
 }
 
-.overlay {
+.login-overlay {
   position: fixed;
   width: 100%;
   height: 100%;
@@ -27,7 +27,8 @@ body, html, #root {
   height: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex start ;
+  padding-top: 80px;
 }
 
 .login-box {
@@ -44,6 +45,8 @@ body, html, #root {
 
 .login-box h2 {
   margin-bottom: 1.5rem;
+  font-weight: bold;
+  color: #00a8ff;
 }
 
 .login-box input {
@@ -78,7 +81,7 @@ body, html, #root {
   text-decoration: underline;
 }
 
-.popup {
+.login-popup {
   margin-top: 1rem;
   background: #f8d7da;
   color: #721c24;

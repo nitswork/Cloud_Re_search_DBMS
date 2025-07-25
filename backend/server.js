@@ -1,11 +1,15 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const { connectMongoose, User } = require('./Database.js');
-const passport = require('passport');
-const { initializingPassport, isAuthenticated } = require('./passportConfig.js');
-const expressSession = require('express-session');
 const path = require('path');
+const fs = require('fs');
+const multer = require('multer');
+const bcrypt = require('bcryptjs');
+const expressSession = require('express-session');
+const passport = require('passport');
+
+const { connectMongoose, User, Research } = require('./Database.js');// <-- include Research model
+const { initializingPassport, isAuthenticated } = require('./passportConfig.js');
 
 // DB connection
 connectMongoose();
@@ -18,8 +22,10 @@ app.use(cors({
   origin: 'http://localhost:3000', // Adjust to match your React dev server
   credentials: true
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static('uploads'));
 app.use(expressSession({
   secret: 'secret',
   resave: false,
@@ -28,11 +34,17 @@ app.use(expressSession({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// UPLOADS
+const upload = multer({
+  dest: 'uploads/', // folder for storing uploaded files
+  limits: { fileSize: 10 * 1024 * 1024 } // limit file size to 10MB
+})
+
 /**
  * Auth Routes
  */
 
-// ✅ Register User
+// Register User
 app.post("/register", async (req, res) => {
   const { username, password, name } = req.body;
 
@@ -63,7 +75,7 @@ app.post("/register", async (req, res) => {
 });
 
 
-// ✅ Login User
+// Login User
 app.post('/login', (req, res, next) => {
   const { username, password } = req.body;
 //gap in strings
@@ -81,20 +93,21 @@ app.post('/login', (req, res, next) => {
 
     req.login(user, (err) => {
       if (err) return next(err);
-      return res.json({ message: 'Login successful', user: { name: user.name, username: user.username } });
+      return res.json({ message: 'Login successful', user: { name: user.name,role:user?.role, username: user.username } });
     });
   })(req, res, next);
 });
 
-// ✅ Logout
+// Logout
 app.post('/logout', (req, res, next) => {
   req.logout((err) => {
     if (err) return next(err);
+    res.clearCookie('connect.sid');
     res.json({ message: 'Logged out successfully' });
   });
 });
 
-// ✅ Get Current Authenticated User
+// Get Current Authenticated User
 app.get('/me', isAuthenticated, (req, res) => {
   res.json({ user: req.user });
 });
@@ -103,7 +116,7 @@ app.get('/me', isAuthenticated, (req, res) => {
  * Profile Routes
  */
 
-// ✅ Save/Update Profile
+// Save/Update Profile
 app.post('/profile', isAuthenticated, async (req, res) => {
   try {
     const updatedUser = await User.findByIdAndUpdate(
@@ -116,14 +129,14 @@ app.post('/profile', isAuthenticated, async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    res.json({ message: 'Profile saved successfully', user: updatedUser });
+    res.json({ message: 'Profile saved successfully', user: updatedUser, redirect: '/userdashboard' });
   } catch (err) {
     console.error('Profile update error:', err);
     res.status(500).json({ message: 'Error saving profile' });
   }
 });
 
-// ✅ Fetch Profile
+// Fetch Profile
 app.get('/profile', isAuthenticated, async (req, res) => {
   try {
     const user = await User.findById(req.user._id).lean();
@@ -138,14 +151,141 @@ app.get('/profile', isAuthenticated, async (req, res) => {
   }
 });
 
-// ✅ Role Chooser
-app.post('/choose-role', isAuthenticated, (req, res) => {
-  const { role } = req.body;
-  if (role === 'admin') {
-    return res.json({ redirect: '/admin' });
+// Role Chooser
+app.get('/profile', isAuthenticated, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).lean();
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(user); // Send full user object or sanitize if needed
+  } catch (err) {
+    console.error('Fetch profile error:', err);
+    res.status(500).json({ message: 'Error fetching profile' });
   }
-  return res.json({ redirect: '/dashboard' });
 });
+
+app.post('/upload-research', isAuthenticated, upload.single('file'), async (req, res) => {
+  try {
+    const { title, text, visibility } = req.body;
+    const filePath = req.file ? req.file.path : null;
+    const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+
+    if (!title?.trim() && !text?.trim()) {
+      return res.status(400).json({ message: 'Title or text is required.' });
+    }
+
+    const newResearch = new Research({
+      user: req.user._id,
+      authorName: req.user.firstName,
+      title,
+      text,
+      filePath,
+      imageUrl,
+      visibility,
+    });
+
+    await newResearch.save();
+
+    res.status(201).json({
+      _id: newResearch._id,
+      title: newResearch.title,
+      text: newResearch.text,
+      imageUrl: newResearch.imageUrl,
+      authorName: newResearch.authorName,
+      createdAt: newResearch.createdAt,
+    });
+  } catch (err) {
+    console.error('Upload error:', err);
+    res.status(500).json({ message: 'Error uploading research' });
+  }
+});
+
+// All public research
+app.get('/research/public', async (req, res) => {
+  try {
+    const publicResearches = await Research.find({ visibility: 'public' }).populate('user', 'name');
+    res.json(publicResearches);
+  } catch (err) {
+    console.error('Fetch error:', err);
+    res.status(500).json({ message: 'Error fetching public research' });
+  }
+});
+
+// All uploads by logged-in user
+app.get('/research/mine', isAuthenticated, async (req, res) => {
+  try {
+    const myResearches = await Research.find({ user: req.user._id });
+    res.json(myResearches);
+  } catch (err) {
+    console.error('Fetch error:', err);
+    res.status(500).json({ message: 'Error fetching your research' });
+  }
+});
+
+// Delete a research entry
+app.delete('/research/:id', isAuthenticated, async (req, res) => {
+  try {
+    const research = await Research.findById(req.params.id);
+
+    if (!research) {
+      return res.status(404).json({ message: 'Research not found' });
+    }
+
+    // Check if the logged-in user owns the research
+    if (!research.user.equals(req.user._id)) {
+      return res.status(403).json({ message: 'Unauthorized to delete this research' });
+    }
+
+    // Delete the file if it exists
+    if (research.filePath && fs.existsSync(research.filePath)) {
+      fs.unlinkSync(research.filePath);
+    }
+
+    // Remove from MongoDB
+    await Research.findByIdAndDelete(req.params.id);
+
+    res.json({ message: 'Research deleted successfully' });
+  } catch (err) {
+    console.error('Delete error:', err);
+    res.status(500).json({ message: 'Error deleting research' });
+  }
+});
+
+app.post('/user/update', isAuthenticated, upload.single('profilePic'), async (req, res) => {
+  const { username, email, password } = req.body;
+  const profilePic = req.file?.filename;
+  const updatedFields = {};
+
+  if (username) updatedFields.username = username;
+  if (email) updatedFields.email = email;
+  if (profilePic) updatedFields.profilePic = profilePic;
+
+  if (password) {
+    try {
+      const salt = await bcrypt.genSalt(10);
+      updatedFields.password = await bcrypt.hash(password, salt);
+    } catch (err) {
+      return res.status(500).json({ message: 'Error hashing password' });
+    }
+  }
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { $set: updatedFields },
+      { new: true }
+    );
+
+    if (!updatedUser) return res.status(404).json({ message: 'User not found' });
+    res.status(200).json({ message: 'Updated successfully!', user: updatedUser });
+  } catch (err) {
+    console.error('User update error:', err);
+    res.status(500).json({ message: 'Failed to update user' });
+  }
+});
+
 
 /**
  * Optional: Serve React Static Build (if in production)
@@ -157,163 +297,6 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.join(__dirname, 'client/dist', 'index.html'));
   });
 }
-
-
-// const express = require('express');
-// const app = express();
-// const ejs = require("ejs");
-
-// const {connectMongoose, User}= require("./Database.js");
-// const passport = require ("passport")
-// const {initializingPassport, isAuthenticated} = require("./passportConfig.js");
-// const expressSession = require("express-session");
-// connectMongoose();
-
-// initializingPassport(passport);
-
-// app.use(express.json());
-// app.use(express.urlencoded({extended: true}));
-// //resave = false prevents unnecessary storage consumption
-// app.use(expressSession({secret: "secret", resave: false,
-//     saveUninitialized: false}));
-// app.use(passport.initialize());
-// app.use(passport.session());
-
-
-// app.set("view engine", "ejs");
-
-// app.get("/" , (req,res) => {
-//     res.render("index");
-// });
-
-// app.get("/register", (req, res) => {
-//     res.render("register", { error: null });
-// });
-
-
-// app.get("/login", (req,res)=>{
-//     res.render("login");
-// });
-
-
-// // app.post("/register", async (req,res)=>{
-// //     const user = await User.findOne({username: req.body.username});
-// //     if(user)return express.status(400).send("User already exists");
-// //     const newUser = await User.create(req.body);
-
-// //     res.status(201).send(newUser);
-// // });
-
-// app.post("/register", async (req, res) => {
-//     const { username, password, name } = req.body;
-
-//     // Validation
-//     if (!username || !password || !name || !username.trim() || !password.trim() || !name.trim()) {
-//         return res.render("register", { error: "All fields are required and cannot be empty." });
-//     }
-
-//     if (/^\d/.test(username)) {
-//         return res.render("register", { error: "Email cannot start with a number." });
-//     }
-
-//     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username)) {
-//         return res.render("register", { error: "Invalid email format." });
-//     }
-
-//     try {
-//         const existingUser = await User.findOne({ username });
-//         if (existingUser) {
-//             return res.render("register", { error: "User already exists" });
-//         }
-
-//         const newUser = await User.create({ username, password, name });
-//         res.redirect("/login");
-//     } catch (err) {
-//         res.render("register", { error: "Something went wrong: " + err.message });
-//     }
-// });
-
-
-
-// // app.post("/login", passport.authenticate("local",{failureRedirect:"/register",successRedirect:"/portal"}), async (req,res)=>{
-// // });
-
-
-// app.post("/login", (req, res, next) => {
-//     const { username, password } = req.body;
-
-//     // ✅ Basic input validation
-//     if (!username || !password || !username.trim() || !password.trim()) {
-//         return res.render("login", { error: "Username and password cannot be empty or only spaces." });
-//     }
-
-//     if (/^\d/.test(username)) {
-//         return res.render("login", { error: "Username cannot start with a number." });
-//     }
-
-//     // ✅ Custom Passport callback
-//     passport.authenticate("local", (err, user, info) => {
-//         if (err) return next(err);
-
-//         if (!user) {
-//             return res.render("login", { error: "Invalid username or password." });
-//         }
-
-//         req.login(user, (err) => {
-//             if (err) return next(err);
-//             return res.redirect("/portal");
-//         });
-//     })(req, res, next);
-// });
-
-
-// app.get("/profile", isAuthenticated,(req,res)=>{
-    
-//     //res.send(req.user);
-//      res.render("Profile",{user: req.user});
-// });
-
-// app.post("/profile", isAuthenticated, async (req, res) => {
-//   // You can save this to DB or just console log for now
-//   console.log("User profile submitted:", req.body);
-
-//   // Optionally, update user's profile in DB
-//   await User.findByIdAndUpdate(req.user._id, {
-//     ...req.body
-//   });
-
-//   res.send("Profile saved successfully. You can enhance this with a redirect or dashboard.");
-// });
-
-// app.get("/portal", isAuthenticated,(req, res) => {
-//   res.render("portal",{user: req.user});
-// });
-
-// app.post("/choose-role", isAuthenticated, (req, res) => {
-//   const role = req.body.role;
-//   if (role === "admin") {
-//     return res.redirect("/admin-dashboard");
-//   }
-//   return res.redirect("/profile"); // default user dashboard
-// });
-
-// // app.get("/logout", (req,res)=> {
-// //     req.logout();
-// //     //res.redirect("/login");
-// //     res.send("logged out");
-// // });
-
-// app.get('/logout', (req, res, next) => {
-//   req.logout(function(err) {
-//     if (err) { return next(err); }
-//     res.send("Logged Out");
-//     // res.redirect('/');
-//   });
-// });
-
-// app.listen(3000 , () => {
-//     console.log("Listening on http://localhost:3000");
-// });
 /**
  * Start Server
  */

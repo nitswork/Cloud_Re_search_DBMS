@@ -1,6 +1,6 @@
 body {
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(to right, #00c6ff, #0072ff);
+  background: linear-gradient(to right, #33a6c6, #0f6de0);
   color: #333;
   margin: 0;
   padding: 0;
@@ -9,7 +9,7 @@ body {
 .container {
   max-width: 700px;
   margin:20px auto;
-  background: white;
+  background: rgba(255, 255, 255, 0.933);
   padding: 30px;
   border-radius: 15px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
@@ -21,6 +21,8 @@ body {
 
 h2 {
   text-align: center;
+  font-weight: bold;
+  font-size: 25px;
   margin-bottom: 20px;
   color: #0072ff;
 }
@@ -33,7 +35,7 @@ label {
 
 input,
 select {
-  width: 70%;
+  width: 100%;
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #ccc;
@@ -49,6 +51,7 @@ button {
   border: none;
   border-radius: 10px;
   font-size: 1rem;
+  font-weight: bold;
   cursor: pointer;
 }
 

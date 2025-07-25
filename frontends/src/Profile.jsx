@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import './ProfileForm.css';
 import { updateProfile } from './api';
+import { useNavigate } from 'react-router-dom'; //
 const ProfileForm = () => {
+  const navigate = useNavigate(); 
   const [formData, setFormData] = useState({
     role: '',
     firstName: '',
@@ -11,6 +13,7 @@ const ProfileForm = () => {
     country: '',
     state: '',
     university: '',
+    institute:'',
     department: '',
   });
 
@@ -45,6 +48,7 @@ const ProfileForm = () => {
 
         if (res.ok) {
         alert('Profile saved successfully!');
+        navigate('/userdashboard')
         } else {
         const data = await res.json();
         alert(data.message || 'Something went wrong.');
@@ -56,10 +60,17 @@ const ProfileForm = () => {
 
 
   const isStudent = formData.role === 'student';
+  const isMedicalResearcher = formData.role === 'medical_researcher';
+  const isScientificResearcher = formData.role === 'scientific__researcher';
+  const isMathematician = formData.role === 'mathematician';
+
   const isOtherRole =
     formData.role &&
     formData.role !== '' &&
-    formData.role !== 'student';
+    formData.role !== 'student'
+    formData.role !== 'medical_researcher'
+    formData.role !== 'scientific__researcher'
+    formData.role !== 'mathematician';
 
   return (
     <div className="container">
@@ -143,6 +154,19 @@ const ProfileForm = () => {
               type="text"
               name="university"
               value={formData.university}
+              onChange={handleChange}
+              required
+            />
+          </div>
+        )}
+
+        {isMedicalResearcher && isScientificResearcher && isMathematician &&(
+          <div>
+            <label htmlFor="institute">Institute</label>
+            <input
+              type="text"
+              name="institute"
+              value={formData.institute}
               onChange={handleChange}
               required
             />

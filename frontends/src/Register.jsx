@@ -53,7 +53,6 @@ const Register = () => {
               onChange={handleChange}
               required
             />
-            {error && <span className="error-message">{error}</span>}
 
             <input
               type="password"
@@ -68,6 +67,8 @@ const Register = () => {
           </form>
 
           <a href="/login">Already have an account? Login</a>
+          {error && <div className="register-popup">{error}</div>}
+
         </div>
       </div>
     </>

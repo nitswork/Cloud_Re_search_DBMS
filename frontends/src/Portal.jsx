@@ -52,9 +52,6 @@ const PortalPage = () => {
         <button className="portal-btn" onClick={() => handleRoleSelect('user')}>
           User Dashboard
         </button>
-        <button className="portal-btn" onClick={() => handleRoleSelect('admin')}>
-          Admin Dashboard
-        </button>
         {user && (
           <button className="portal-btn logout-btn" onClick={handleLogout}>
             Logout

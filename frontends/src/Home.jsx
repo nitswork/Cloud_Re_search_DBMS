@@ -20,16 +20,17 @@ const HomePage = () => {
 
   const handleLogout = async () => {
     await logout();
-    window.location.reload(); // or redirect if preferred
+    window.location.reload();
   };
 
   return (
     <div>
-      <div className="background"></div>
-      <div className="overlay"></div>
+      <div className="home-background"></div>
+      <div className="home-overlay"></div>
 
-      <div className="container">
-        <h1>Cloud Research Portal</h1>
+      <div className="home-box">
+        <h3>Uniting Minds, Managing Research, Powering Discovery.</h3>
+        <h1>SciConnect</h1>
         <p>
           A secure and powerful place to manage your research data and publications — from anywhere, anytime.
         </p>
