@@ -1,0 +1,70 @@
+.admin-sidebar {
+    width: 240px;
+    height: 100vh;
+    background-color: #000000;
+    color: #ecf0f1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    border-top-right-radius:30px ;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+.admin-profile-sidebar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.admin-profile-sidebar img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    border: 2px solid #ecf0f1;
+}
+
+.admin-profile-sidebar p {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.admin-nav-links-sidebar {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+}
+
+.admin-nav-links-sidebar li {
+    width: 100%;
+    padding: 16px 30px;
+    cursor: pointer;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.admin-nav-links-sidebar li:hover
+{
+    background-color: #1a1a1a;
+}
+
+.admin-nav-links-sidebar li:last-child {
+    margin-top: 18rem;
+    color: white;
+    background-color:transparent;
+    text-align: left;
+    font-weight: bold;
+    padding-left:30px;
+}
+
+.admin-nav-links-sidebar li:last-child:hover {
+    background-color: #ff4d4d;
+}

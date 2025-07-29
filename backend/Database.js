@@ -28,13 +28,13 @@ const userSchema = new mongoose.Schema({
         enum: ['admin','student', 'lawyer', 'doctor', 'medical_researcher', 'scientific_researcher', 'mathematician'],
         required: true,
         default: 'student'
-    },
+    }
     // accessLevel: {
     // type: String,
     // enum: ['user', 'admin'],
     // default: 'user'
     // }
-});
+}, { timestamps: true });
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password") || !this.password) return next();
 

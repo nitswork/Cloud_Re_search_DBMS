@@ -10,6 +10,9 @@ import UserDashboard from './UserDashboard.jsx';
 import WriteResearch from './components/WriteResearch.jsx';
 import AdminHome from './admin/Pages/Home.jsx';
 import SettingsPage from './components/Settings.jsx';
+import UserList from './admin/Components/UserLists.jsx';
+import Publications from './admin/Components/Publications.jsx';
+import TodaysSignups from './admin/Components/TodaysSignups.jsx';
 function App() {
   return (
     <Router>
@@ -23,6 +26,9 @@ function App() {
         <Route path="/write" element={<WriteResearch />} />
         <Route path="/portal/admin" element ={<AdminHome/>}/>
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path='/admin/users'element={<UserList/>}/>
+        <Route path='/admin/publications' element={<Publications/>}/>
+        <Route path='/admin/todaysignup' element={<TodaysSignups/>}/>
       </Routes>
     </Router>
   );

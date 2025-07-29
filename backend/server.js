@@ -46,7 +46,7 @@ const upload = multer({
 
 // Register User
 app.post("/register", async (req, res) => {
-  const { username, password, name } = req.body;
+  const { username, password, name,role = 'student' } = req.body;
 
   if (!username || !password || !name || !username.trim() || !password.trim() || !name.trim()) {
     return res.status(400).json({ message: "All fields are required and cannot be empty." });
@@ -67,7 +67,7 @@ app.post("/register", async (req, res) => {
       return res.status(409).json({ message: "User already exists" });
     }
 
-    const newUser = await User.create({ username, password, name });
+    const newUser = await User.create({ username, password, name,role });
     return res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
     return res.status(500).json({ message: "Server error: " + err.message });
@@ -283,6 +283,109 @@ app.post('/user/update', isAuthenticated, upload.single('profilePic'), async (re
   } catch (err) {
     console.error('User update error:', err);
     res.status(500).json({ message: 'Failed to update user' });
+  }
+});
+
+// Get all users (for admin dashboard)
+app.get('/api/users', isAuthenticated, async (req, res) => {
+  try {
+    // Only allow admin to access this endpoint
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied. Admins only.' });
+    }
+
+    const users = await User.find({}, 'name username email role createdAt');
+    res.json(users);
+  } catch (err) {
+    console.error('Error fetching users:', err);
+    res.status(500).json({ message: 'Server error fetching users' });
+  }
+});
+
+// DELETE user (admin only)
+app.delete('/api/users/:id', isAuthenticated, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied. Admins only.' });
+    }
+
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // Also optionally delete their associated research
+    await Research.deleteMany({ user: req.params.id });
+
+    res.json({ message: 'User deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting user:', err);
+    res.status(500).json({ message: 'Failed to delete user' });
+  }
+});
+
+// ADMIN: Get all publications
+app.get('/api/research', isAuthenticated, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Admins only' });
+    }
+
+    const allResearch = await Research.find().populate('user', 'name');
+    res.json(allResearch);
+  } catch (err) {
+    console.error('Error fetching publications:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// ADMIN: Delete any publication
+app.delete('/api/research/:id', isAuthenticated, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Admins only' });
+    }
+
+    const research = await Research.findById(req.params.id);
+    if (!research) {
+      return res.status(404).json({ message: 'Publication not found' });
+    }
+
+    // Delete associated file if any
+    if (research.filePath && fs.existsSync(research.filePath)) {
+      fs.unlinkSync(research.filePath);
+    }
+
+    await Research.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Publication deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting publication:', err);
+    res.status(500).json({ message: 'Failed to delete publication' });
+  }
+});
+
+// Admin: Get today's user signups
+app.get('/api/todays-signups', isAuthenticated, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Admins only' });
+    }
+
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const users = await User.find({
+      createdAt: {
+        $gte: startOfDay,
+        $lte: endOfDay,
+      },
+    });
+
+    res.json(users);
+  } catch (err) {
+    console.error('Error fetching today\'s signups:', err);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
