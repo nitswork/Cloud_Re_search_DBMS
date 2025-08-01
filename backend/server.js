@@ -7,6 +7,7 @@ const multer = require('multer');
 const bcrypt = require('bcryptjs');
 const expressSession = require('express-session');
 const passport = require('passport');
+const jwt =require('jsonwebtoken');
 
 const { connectMongoose, User, Research } = require('./Database.js');// <-- include Research model
 const { initializingPassport, isAuthenticated } = require('./passportConfig.js');
@@ -43,7 +44,24 @@ const upload = multer({
 /**
  * Auth Routes
  */
+app.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
+app.get(
+  "/google/callback",
+  passport.authenticate("google", { failureRedirect: "http://localhost:3000/login" }),
+  (req, res) => {
+    const token = jwt.sign({ id: req.user.id }, "process.env.JWT_SECRET", { expiresIn: "7d" });
+
+    res.redirect("http://localhost:3000/signin?token="+token);
+  }
+);
+
+app.get("/logout", (req, res) => {
+  req.logout((err) => {
+    if (err) return res.status(500).json({ error: "Logout failed" });
+    res.json({ msg: "Logged Out" })
+  });
+});
 // Register User
 app.post("/register", async (req, res) => {
   const { username, password, name,role = 'student' } = req.body;
@@ -403,6 +421,6 @@ if (process.env.NODE_ENV === 'production') {
 /**
  * Start Server
  */
-app.listen(3001, () => {
-  console.log('Server running on http://localhost:3001');
+app.listen(5000, () => {
+  console.log('Server running on http://localhost:5000');
 });
