@@ -10,7 +10,7 @@ const SettingsPage = () => {
   });
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    fetch('http://localhost:3001/profile', {
+    fetch('http://localhost:5000/profile', {
       credentials: 'include',
     })
       .then(res => {
@@ -48,7 +48,7 @@ const SettingsPage = () => {
       data.append('profilePic', formData.profilePic);
     }
 
-    fetch('http://localhost:3001/user/update', {
+    fetch('http://localhost:5000/user/update', {
       method: 'POST',
       body: data,
       credentials: 'include',

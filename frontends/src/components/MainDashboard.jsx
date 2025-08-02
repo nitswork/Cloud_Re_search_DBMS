@@ -9,7 +9,7 @@ const MainDashboard = () => {
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
-        fetch('http://localhost:3001/research/public')
+        fetch('http://localhost:5000/research/public')
         .then(res => res.json())
         .then(data => setAllResearch(data))
         .catch(err=>{
@@ -32,7 +32,7 @@ const MainDashboard = () => {
     //     formData.append('text', uploadData.text);
     //     formData.append('file', uploadData.file);
 
-    //     const res = await fetch('http://localhost:3001/upload', {
+    //     const res = await fetch('http://localhost:5000/upload', {
     //     method: 'POST',
     //     body: formData,
     //     credentials: 'include'

@@ -8,7 +8,7 @@ const ProfileForm = () => {
     role: '',
     firstName: '',
     lastName: '',
-    email: '',
+    // email: '',
     phone: '',
     country: '',
     state: '',
@@ -25,11 +25,11 @@ const ProfileForm = () => {
   const handleSubmit = async (e) => {
   e.preventDefault();
   // ✅ Email validation (if not empty)
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]*[a-zA-Z][a-zA-Z0-9-]*\.[a-zA-Z]{2,}$/;
-  if (!emailRegex.test(formData.email.trim())) {
-    alert('Please enter a valid email address.');
-    return;
-  }
+  // const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]*[a-zA-Z][a-zA-Z0-9-]*\.[a-zA-Z]{2,}$/;
+  // if (!emailRegex.test(formData.email.trim())) {
+  //   alert('Please enter a valid email address.');
+  //   return;
+  // }
 
   // ✅ Phone validation (only if provided)
   if (formData.phone && !/^\d{10}$/.test(formData.phone.trim())) {
@@ -37,7 +37,7 @@ const ProfileForm = () => {
     return;
   }
     try {
-        const res = await fetch('http://localhost:3001/profile', {
+        const res = await fetch('http://localhost:5000/profile', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -111,14 +111,14 @@ const ProfileForm = () => {
           required
         />
 
-        <label htmlFor="email">Email</label>
+        {/* <label htmlFor="email">Email</label>
         <input
           type="email"
           name="email"
           value={formData.email}
           onChange={handleChange}
           required
-        />
+        /> */}
 
         <label htmlFor="phone">Phone Number</label>
         <input

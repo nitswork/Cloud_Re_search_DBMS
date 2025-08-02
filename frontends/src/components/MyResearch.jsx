@@ -5,7 +5,7 @@ const MyResearch = ({ user }) => {
     const [myResearches, setMyResearches] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:3001/research/mine', {
+        fetch('http://localhost:5000/research/mine', {
             credentials: 'include'
         })
         .then(res => res.json())
@@ -19,7 +19,7 @@ const MyResearch = ({ user }) => {
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch(`http://localhost:3001/research/${id}`, {
+      const res = await fetch(`http://localhost:5000/research/${id}`, {
         method: 'DELETE',
         credentials: 'include'
       });

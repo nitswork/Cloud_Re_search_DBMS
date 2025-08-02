@@ -20,7 +20,7 @@ initializingPassport(passport);
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:3000', // Adjust to match your React dev server
+  origin: 'http://localhost:5173', // Adjust to match your React dev server
   credentials: true
 }));
 
@@ -48,11 +48,11 @@ app.get("/google", passport.authenticate("google", { scope: ["profile", "email"]
 
 app.get(
   "/google/callback",
-  passport.authenticate("google", { failureRedirect: "http://localhost:3000/login" }),
+  passport.authenticate("google", { failureRedirect: "http://localhost:5173/login" }),
   (req, res) => {
     const token = jwt.sign({ id: req.user.id }, "process.env.JWT_SECRET", { expiresIn: "7d" });
 
-    res.redirect("http://localhost:3000/signin?token="+token);
+    res.redirect("http://localhost:5173/portal");
   }
 );
 
@@ -85,7 +85,7 @@ app.post("/register", async (req, res) => {
       return res.status(409).json({ message: "User already exists" });
     }
 
-    const newUser = await User.create({ username, password, name,role });
+    const newUser = await User.create({email:username, username, password, name,role });
     return res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
     return res.status(500).json({ message: "Server error: " + err.message });

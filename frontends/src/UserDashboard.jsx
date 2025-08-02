@@ -12,7 +12,7 @@ const UserDashboard = () => {
 
     // Fetch profile data on mount
     useEffect(() => {
-        fetch('http://localhost:3001/profile', {
+        fetch('http://localhost:5000/profile', {
         credentials: 'include',
         })
         .then(res => {
@@ -26,7 +26,7 @@ const UserDashboard = () => {
     // Handle logout click
     const handleLogout = async () => {
         try {
-        const res = await fetch('http://localhost:3001/logout', {
+        const res = await fetch('http://localhost:5000/logout', {
             method: 'POST',
             credentials: 'include',
         });
