@@ -65,6 +65,11 @@ const Register = () => {
 
             <button type="submit">Register</button>
           </form>
+          <div className='flex mt-5 px-10 gap-2 text-white text-sm items-center'>
+              <hr className='w-full ' />
+              Or
+              <hr className='w-full' />
+          </div>
           <div className='flex'>
               <a
                 style={{
@@ -76,11 +81,11 @@ const Register = () => {
                 href='http://localhost:5000/google'
               >
                 <img
-                  className='h-10 w-10 rounded-full'
+                  className='h-12 w-18 rounded-full'
                   src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-S3qWcvePdfZilsn8f2X1KXTC6vZ0xjQPgQ&s'
                   alt=''
                 />
-                <h1 color='black'>Continue With Google</h1>
+                <h1>Continue With Google</h1>
               </a>
             </div>
           <a href="/login">Already have an account? Login</a>
