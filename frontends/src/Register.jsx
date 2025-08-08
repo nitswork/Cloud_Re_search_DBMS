@@ -65,7 +65,24 @@ const Register = () => {
 
             <button type="submit">Register</button>
           </form>
-
+          <div className='flex'>
+              <a
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  textDecoration: 'none'
+                }}
+                className='flex bg-white mx-5 p-1  rounded-full gap-1 w-full text-xs items-center'
+                href='http://localhost:5000/google'
+              >
+                <img
+                  className='h-10 w-10 rounded-full'
+                  src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-S3qWcvePdfZilsn8f2X1KXTC6vZ0xjQPgQ&s'
+                  alt=''
+                />
+                <h1 color='black'>Continue With Google</h1>
+              </a>
+            </div>
           <a href="/login">Already have an account? Login</a>
           {error && <div className="register-popup">{error}</div>}
 

@@ -11,6 +11,7 @@ const jwt =require('jsonwebtoken');
 
 const { connectMongoose, User, Research } = require('./Database.js');// <-- include Research model
 const { initializingPassport, isAuthenticated } = require('./passportConfig.js');
+const { getUserSignUp } = require('./helpers.js');
 
 // DB connection
 connectMongoose();
@@ -51,7 +52,10 @@ app.get(
   passport.authenticate("google", { failureRedirect: "http://localhost:5173/login" }),
   (req, res) => {
     const token = jwt.sign({ id: req.user.id }, "process.env.JWT_SECRET", { expiresIn: "7d" });
-
+    if(req.user.role == "admin") {
+       res.redirect("http://localhost:5173/portal/admin");
+       return;
+    }
     res.redirect("http://localhost:5173/portal");
   }
 );
@@ -418,6 +422,9 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.join(__dirname, 'client/dist', 'index.html'));
   });
 }
+
+
+app.get('/signup', getUserSignUp);
 /**
  * Start Server
  */

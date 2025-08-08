@@ -3,6 +3,7 @@ import ASidebar from '../Components/ASidebar';
 import ADashboard from '../Components/ADashboard';
 import UserList from '../Components/UserLists';
 import Publications from '../Components/Publications';
+import UserSignUpStats from '../../UserSignUpStats';
 
 export default function Home() {
   const [currentView, setCurrentView] = useState('dashboard');
@@ -13,7 +14,7 @@ export default function Home() {
 
   const handleLogout = () => {
     // Optional: you could also move this logic to ASidebar
-    fetch('http://localhost:3001/logout', {
+    fetch('http://localhost:5000/logout', {
       method: 'POST',
       credentials: 'include',
     }).then(() => {
@@ -40,6 +41,7 @@ export default function Home() {
       <div className="admin-content">
         {renderContent()}
       </div>
+      <UserSignUpStats />
     </div>
   );
 }

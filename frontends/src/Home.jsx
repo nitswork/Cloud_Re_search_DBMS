@@ -40,7 +40,7 @@ const HomePage = () => {
           <Link to='/'>Home</Link>
           {!user && <a href='/register'>Register</a>}
           {!user && <a href='/login'>Login</a>}
-          <div className='flex'>
+          {/* <div className='flex'>
             <hr />
             <a className='flex gap-1 text-xs items-center' href='http://localhost:5000/google'>
               <img
@@ -50,7 +50,7 @@ const HomePage = () => {
               />
               Continue With Google
             </a>
-          </div>
+          </div> */}
           {user && <button onClick={handleLogout}>Logout</button>}
         </div>
       </div>

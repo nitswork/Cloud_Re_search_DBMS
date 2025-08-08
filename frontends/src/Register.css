@@ -83,7 +83,9 @@ body, html {
   font-size: 0.9rem;
   text-decoration: underline;
 }
-
+.flex h1{
+  color: #111;
+}
 .register-popup {
   margin-top: 1rem;
   background: #f8d7da;

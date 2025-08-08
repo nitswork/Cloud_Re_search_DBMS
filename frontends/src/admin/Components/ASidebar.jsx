@@ -9,7 +9,7 @@ const ASidebar = ({onLogout, onNavigate }) => {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const res = await fetch('http://localhost:3001/profile', {
+                const res = await fetch('http://localhost:5000/profile', {
                 credentials: 'include',
                 });
 
@@ -27,7 +27,7 @@ const ASidebar = ({onLogout, onNavigate }) => {
 
     const handleLogout = async () => {
         try {
-        const res = await fetch('http://localhost:3001/logout', {
+        const res = await fetch('http://localhost:5000/logout', {
             method: 'POST',
             credentials: 'include',
         });
