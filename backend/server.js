@@ -21,7 +21,7 @@ initializingPassport(passport);
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5173', // Adjust to match your React dev server
+  origin: ['http://localhost:5173','https://pragyanm.com'], // Adjust to match your React dev server
   credentials: true
 }));
 

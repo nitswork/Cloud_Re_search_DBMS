@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 exports.connectMongoose = () => {
-mongoose.connect('mongodb://localhost:27017/passport')
+mongoose.connect('mongodb://admin1606:bk_mongodb@13.204.37.142:27017/researchdb?authSource=admin')
         .then((e) => console.log(`Connected to MongoDB: ${e.connection.host}`))
         .catch((e) => console.log(e));
 };
