@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend, ResponsiveContainer } from "recharts";
 import axios from "axios";
+import { baseURL } from "./api";
 
 // Helper to convert array of { _id: role, count: number } into { role: x, today: y, week: z, total: a }
 const transformRoleData = (todayArr, weekArr, totalArr) => {
@@ -31,7 +32,7 @@ const RoleBasedSignUpStats = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/signup"); // update if needed
+        const res = await axios.get(baseURL+"/signup"); // update if needed
         const transformed = transformRoleData(res.data.todayByRole, res.data.weekByRole, res.data.totalByRole);
         setRoleStats(transformed);
       } catch (err) {
