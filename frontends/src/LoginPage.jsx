@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import './Login.css' // Make sure to create this file or use inline styles
-import { login } from './api'
+import { baseURL, login } from './api'
 import { useNavigate } from 'react-router-dom'
 
 const LoginPage = () => {
@@ -73,7 +73,7 @@ const LoginPage = () => {
                   textDecoration: 'none'
                 }}
                 className='flex bg-white mx-5 p-1  rounded-full gap-1 w-full text-xs items-center'
-                href='http://localhost:5000/google'
+                href={baseURL+`/google`}
               >
                 <img
                   className='h-10 w-10 rounded-full'

@@ -1,47 +1,61 @@
 import React, { useState } from 'react';
 import './WriteResearch.css';
-import { CiFileOn, CiVideoOn, CiImageOn  } from "react-icons/ci";
+import { CiFileOn, CiVideoOn, CiImageOn } from "react-icons/ci";
 import { BsFileEarmarkCode } from "react-icons/bs";
+import { baseURL } from '../api';
 
 const Write = () => {
   const [title, setTitle] = useState('');
   const [text, setText] = useState('');
   const [file, setFile] = useState(null);
   const [visibility, setVisibility] = useState('public');
+  const [loading, setLoading] = useState(false);
+  const [uploadedUrl, setUploadedUrl] = useState(null);
 
   const handleUpload = async () => {
-    if (!title.trim()) {
-      alert('Please enter a title.');
+    if (!title.trim() && !text.trim()) {
+      alert('Please enter at least a title or some text.');
       return;
     }
 
     const formData = new FormData();
-    formData.append('title', title);
-    formData.append('text', text);
+    formData.append('title', title.trim());
+    formData.append('text', text.trim());
     formData.append('visibility', visibility);
-    if(file){
-    formData.append('file', file);
+    if (file) {
+      formData.append('file', file);
     }
 
     try {
-      const res = await fetch('http://localhost:5000/upload-research', {
+      setLoading(true);
+      setUploadedUrl(null);
+
+      const res = await fetch(`${baseURL}/upload-research`, {
         method: 'POST',
         body: formData,
         credentials: 'include',
       });
 
       const data = await res.json();
+      setLoading(false);
+
       if (res.ok) {
         alert('Upload successful!');
         setTitle('');
         setText('');
         setFile(null);
         setVisibility('public');
+
+        if (data.imageUrl) {
+          // Full URL banate hain backend ka baseURL + image path
+          setUploadedUrl(`${baseURL}${data.imageUrl}`);
+        }
       } else {
         alert(data.message || 'Upload failed.');
       }
     } catch (err) {
       console.error('Upload error:', err);
+      setLoading(false);
       alert('Server error');
     }
   };
@@ -51,6 +65,7 @@ const Write = () => {
       <div className='write-content'>
         <label className="write-label">NEW CONTENT</label>
       </div>
+
       <input
         type="text"
         placeholder="Title"
@@ -65,7 +80,6 @@ const Write = () => {
         onChange={(e) => setText(e.target.value)}
         className="write-textarea"
       />
-
 
       <div className="write-icon-buttons">
         <label className="circle-btn" title="Choose a file">
@@ -86,17 +100,32 @@ const Write = () => {
         </label>
       </div>
 
+      {file && (
+        <p style={{ marginTop: '8px', fontSize: '14px' }}>
+          Selected file: <b>{file.name}</b>
+        </p>
+      )}
+
       <div className="write-visibility-toggle">
-        {/* <label>Publish</label> */}
         <select value={visibility} onChange={(e) => setVisibility(e.target.value)}>
           <option value="public">Publish</option>
           <option value="private">Private</option>
         </select>
       </div>
 
-      <button onClick={handleUpload} className="write-upload-btn">
-        Upload Research
+      <button
+        onClick={handleUpload}
+        className="write-upload-btn"
+        disabled={loading}
+      >
+        {loading ? 'Uploading...' : 'Upload Research'}
       </button>
+
+      {uploadedUrl && (
+        <p style={{ marginTop: '10px' }}>
+          File Link: <a href={uploadedUrl} target="_blank" rel="noopener noreferrer">{uploadedUrl}</a>
+        </p>
+      )}
     </div>
   );
 };

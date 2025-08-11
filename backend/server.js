@@ -8,11 +8,10 @@ const bcrypt = require('bcryptjs');
 const expressSession = require('express-session');
 const passport = require('passport');
 const jwt =require('jsonwebtoken');
-
 const { connectMongoose, User, Research } = require('./Database.js');// <-- include Research model
 const { initializingPassport, isAuthenticated } = require('./passportConfig.js');
 const { getUserSignUp } = require('./helpers.js');
-
+const {fileURLToPath} = require('url')
 // DB connection
 connectMongoose();
 
@@ -27,7 +26,8 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static('uploads'));
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(expressSession({
   secret: 'secret',
   resave: false,
@@ -37,10 +37,18 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // UPLOADS
-const upload = multer({
-  dest: 'uploads/', // folder for storing uploaded files
-  limits: { fileSize: 10 * 1024 * 1024 } // limit file size to 10MB
-})
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname); // e.g. ".png"
+    const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${ext}`;
+    cb(null, uniqueName);
+  }
+});
+const upload = multer({ storage });
 
 /**
  * Auth Routes

@@ -1,5 +1,6 @@
 import axios from 'axios';
 export const env = true;
+export const baseURL = env?'https://api.pragyanm.com':'http://localhost:5000';
 const API = axios.create({
   baseURL: env?'https://api.pragyanm.com':'http://localhost:5000',
   withCredentials: true, // important for sessions

@@ -2,6 +2,7 @@ import React , { useState, useEffect } from 'react';
 import './MainDashboard.css';
 import { FaSearch, FaPen } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { baseURL } from '../api';
 const MainDashboard = () => {
     const [allResearch, setAllResearch] = useState([]);
     const [uploadData, setUploadData] = useState({ title: '', text: '', file: null });
@@ -9,7 +10,7 @@ const MainDashboard = () => {
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
-        fetch('http://localhost:5000/research/public')
+        fetch(baseURL + '/research/public')
         .then(res => res.json())
         .then(data => setAllResearch(data))
         .catch(err=>{
@@ -68,7 +69,7 @@ const MainDashboard = () => {
                 <div key={i} className="research-item">
                     <h5>{r.title}</h5>
                     {r.text && <p>{r.text.split('\n')[0].slice(0, 100)}...</p>}
-                    {r.imageUrl && <img src={r.imageUrl} alt="Uploaded" />}
+                    <a href={baseURL+r.imageUrl}>View</a>
                     <small>By {r.authorName || 'Unknown'}</small>
                 </div>))}
             </div>

@@ -5,6 +5,7 @@ import Sidebar from './components/Sidebar';
 import MainDashboard from './components/MainDashboard';
 import MyResearch from './components/MyResearch'
 import SettingsPage from './components/Settings';
+import { baseURL } from './api';
 const UserDashboard = () => {
     const [user, setUser] = useState(null);
     const [activeView, setActiveView] = useState('dashboard');
@@ -12,7 +13,7 @@ const UserDashboard = () => {
 
     // Fetch profile data on mount
     useEffect(() => {
-        fetch('http://localhost:5000/profile', {
+        fetch(baseURL + '/profile', {
         credentials: 'include',
         })
         .then(res => {
@@ -26,7 +27,7 @@ const UserDashboard = () => {
     // Handle logout click
     const handleLogout = async () => {
         try {
-        const res = await fetch('http://localhost:5000/logout', {
+        const res = await fetch(baseURL + '/logout', {
             method: 'POST',
             credentials: 'include',
         });
@@ -42,15 +43,13 @@ const UserDashboard = () => {
     };
     return (
         <div className="dashboard-layout">
-            {user?.profilePic && (
-                <img
-                    src={`http://localhost:3001/uploads/${user.profilePic}`} // ⬅️ Serving uploaded file
+                {/* <img
+                    src={baseURL+`${user?.profilePic}`} // ⬅️ Serving uploaded file
                     alt="Profile"
                     style={{ width: '100px', height: '100px', borderRadius: '50%' }}
-                />
-            )}
+                /> */}
 
-            <Sidebar firstName={user?.firstName} onLogout={handleLogout} onNavigate={setActiveView}/>
+            <Sidebar user={user} firstName={user?.firstName} onLogout={handleLogout} onNavigate={setActiveView}/>
             {activeView === 'dashboard' && <MainDashboard user={user} />}
             {activeView === 'myresearch' && <MyResearch user={user} />}
             {activeView === 'settings' && <SettingsPage user={user} />}

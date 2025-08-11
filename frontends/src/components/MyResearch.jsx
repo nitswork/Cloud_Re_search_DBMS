@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import './MyResearch.css';
 import { CiTrash } from 'react-icons/ci';
+import { baseURL } from '../api';
 const MyResearch = ({ user }) => {
     const [myResearches, setMyResearches] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:5000/research/mine', {
+        fetch(baseURL+'/research/mine', {
             credentials: 'include'
         })
         .then(res => res.json())
@@ -19,7 +20,7 @@ const MyResearch = ({ user }) => {
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/research/${id}`, {
+      const res = await fetch(baseURL+`/research/${id}`, {
         method: 'DELETE',
         credentials: 'include'
       });
@@ -44,7 +45,8 @@ const MyResearch = ({ user }) => {
                     <h5>{r.title}</h5>
                     {r.text && <p>{r.text}</p>}
                     {r.imageUrl && (
-                        <img src={r.imageUrl} alt="Uploaded" />
+                        // <img src={r.imageUrl} alt="Uploaded" />
+                        <a href={baseURL+r.imageUrl}>Link</a>
                     )}
                     <button className="delete-button" onClick={() => handleDelete(r._id)}>
                         <CiTrash className="trash-icon"/>

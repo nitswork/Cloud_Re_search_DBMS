@@ -1,5 +1,6 @@
 import React, { useEffect,useState } from 'react';
 import './Settings.css'; // style as needed
+import { baseURL } from '../api';
 
 const SettingsPage = () => {
   const [formData, setFormData] = useState({
@@ -10,7 +11,7 @@ const SettingsPage = () => {
   });
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    fetch('http://localhost:5000/profile', {
+    fetch(baseURL+'/profile', {
       credentials: 'include',
     })
       .then(res => {
@@ -48,7 +49,7 @@ const SettingsPage = () => {
       data.append('profilePic', formData.profilePic);
     }
 
-    fetch('http://localhost:5000/user/update', {
+    fetch(baseURL+'/user/update', {
       method: 'POST',
       body: data,
       credentials: 'include',

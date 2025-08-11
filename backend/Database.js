@@ -29,6 +29,9 @@ const userSchema = new mongoose.Schema({
         required: true,
         default: 'student'
     }
+    ,profilePic: {
+      type:String
+    }
     // accessLevel: {
     // type: String,
     // enum: ['user', 'admin'],
