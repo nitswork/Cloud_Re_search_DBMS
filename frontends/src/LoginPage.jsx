@@ -43,6 +43,7 @@ const LoginPage = () => {
           <h2>Login</h2>
           <form onSubmit={handleSubmit}>
             <input
+            className='bg-white'
               type='email'
               name='username'
               placeholder='Email'
@@ -51,6 +52,7 @@ const LoginPage = () => {
               required
             />
             <input
+            className='bg-white'
               type='password'
               name='password'
               placeholder='Password'
