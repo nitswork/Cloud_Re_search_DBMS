@@ -30,7 +30,7 @@ const HomePage = () => {
 
       <div className='home-box'>
         <h3>Uniting Minds, Managing Research, Powering Discovery.</h3>
-        <h1>SciConnect</h1>
+        <h1>Pragynm</h1>
         <p>
           A secure and powerful place to manage your research data and
           publications — from anywhere, anytime.
