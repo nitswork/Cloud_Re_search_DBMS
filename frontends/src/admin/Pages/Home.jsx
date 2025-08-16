@@ -29,7 +29,7 @@ export default function Home () {
 
   const handleLogout = () => {
     // Optional: you could also move this logic to ASidebar
-    fetch('http://localhost:5000/logout', {
+    fetch(baseURL + '/logout', {
       method: 'POST',
       credentials: 'include'
     }).then(() => {
